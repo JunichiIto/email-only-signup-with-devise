@@ -23,6 +23,18 @@ feature 'Sign up' do
     url = extract_confirmation_url(mail)
     visit url
     expect(page).to have_content 'Enter new password'
+
+    # 登録に失敗する場合
+    click_button 'Submit'
+    expect(page).to have_content "Password can't be blank"
+    expect(page).to have_content "Password confirmation can't be blank"
+
+    fill_in 'Password', with: '12345678'
+    fill_in 'Password confirmation', with: '123456789'
+    click_button 'Submit'
+    expect(page).to have_content 'Password confirmation does not match password'
+
+    # 登録に成功する場合
     fill_in 'Password', with: '12345678'
     fill_in 'Password confirmation', with: '12345678'
     click_button 'Submit'
