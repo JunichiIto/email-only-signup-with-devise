@@ -19,7 +19,7 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
     confirmation_token = params[resource_name][:confirmation_token]
     self.resource = resource_class.find_by_confirmation_token!(confirmation_token)
 
-    if resource.update(resource_params)
+    if resource.update(resource_params) && resource.password_match?
       self.resource = resource_class.confirm_by_token(confirmation_token)
       set_flash_message :notice, :confirmed
       sign_in_and_redirect resource_name, resource
@@ -43,6 +43,6 @@ class Users::ConfirmationsController < Devise::ConfirmationsController
   private
 
   def resource_params
-    params.require(resource_name).permit(:password)
+    params.require(resource_name).permit(:password, :password_confirmation)
   end
 end
