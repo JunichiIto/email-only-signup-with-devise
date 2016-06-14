@@ -23,5 +23,14 @@ feature 'Sign up' do
     fill_in 'Password confirmation', with: '12345678'
     click_button 'Submit'
     expect(page).to have_content 'Your email address has been successfully confirmed.'
+
+    click_link 'Log out'
+    expect(page).to have_content 'Signed out successfully.'
+
+    click_link 'Log in'
+    fill_in 'Email', with: 'foo@example.com'
+    fill_in 'Password', with: '12345678'
+    click_button 'Log in'
+    expect(page).to have_content 'Signed in successfully.'
   end
 end
