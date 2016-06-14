@@ -5,6 +5,11 @@ feature 'Sign up' do
     ActionMailer::Base.deliveries.clear
   end
 
+  def extract_confirmation_url(mail)
+    body = mail.body.encoded
+    body[/http[^"]+/]
+  end
+
   scenario 'メールアドレスのみでユーザー登録を行い、パスワードを後から設定する' do
     visit root_path
     expect(page).to have_http_status :ok
@@ -15,8 +20,7 @@ feature 'Sign up' do
     expect(page).to have_content 'A message with a confirmation link has been sent to your email address'
 
     mail = ActionMailer::Base.deliveries.last
-    body = mail.body.encoded
-    url = body[/http[^"]+/]
+    url = extract_confirmation_url(mail)
     visit url
     expect(page).to have_content 'Enter new password'
     fill_in 'Password', with: '12345678'
