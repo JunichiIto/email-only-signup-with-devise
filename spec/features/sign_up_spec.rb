@@ -1,15 +1,6 @@
 require 'rails_helper'
 
 feature 'Sign up' do
-  background do
-    ActionMailer::Base.deliveries.clear
-  end
-
-  def extract_confirmation_url(mail)
-    body = mail.body.encoded
-    body[/http[^"]+/]
-  end
-
   scenario 'メールアドレスのみでユーザー登録を行い、パスワードを後から設定する' do
     visit root_path
     expect(page).to have_http_status :ok
@@ -19,9 +10,9 @@ feature 'Sign up' do
     expect { click_button 'Sign up' }.to change { ActionMailer::Base.deliveries.size }.by(1)
     expect(page).to have_content 'A message with a confirmation link has been sent to your email address'
 
-    mail = ActionMailer::Base.deliveries.last
-    url = extract_confirmation_url(mail)
-    visit url
+    user = User.last
+    token = user.confirmation_token
+    visit users_confirmation_path(confirmation_token: token)
     expect(page).to have_content 'Enter new password'
 
     # 登録に失敗する場合
